@@ -1,0 +1,78 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/prevBtn"
+        android:text="Previous"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/playBtn"
+        android:text="Play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/nextBtn"
+        android:text="Next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+</LinearLayout>
+
+
+package com.example.app
+
+import android.media.MediaPlayer
+import android.os.Bundle
+import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
+
+class MainActivity : AppCompatActivity() {
+
+    private var player: MediaPlayer? = null
+
+    private val songs = arrayOf(
+        R.raw.song1,
+        R.raw.song2,
+        R.raw.song3
+    )
+
+    private var index = 0
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        val play = findViewById<Button>(R.id.playBtn)
+        val next = findViewById<Button>(R.id.nextBtn)
+        val prev = findViewById<Button>(R.id.prevBtn)
+
+        fun playSong() {
+            player?.release()
+            player = MediaPlayer.create(this, songs[index])
+            player?.start()
+        }
+
+        play.setOnClickListener {
+            playSong()
+        }
+
+        next.setOnClickListener {
+            index = (index + 1) % songs.size
+            playSong()
+        }
+
+        prev.setOnClickListener {
+            index = if (index - 1 < 0) songs.size - 1 else index - 1
+            playSong()
+        }
+    }
+}
+
+
