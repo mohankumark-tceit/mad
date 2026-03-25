@@ -1,0 +1,90 @@
+<!-- res/layout/activity_main.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/btnDialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show Dialog"/>
+
+</LinearLayout>
+
+
+package com.example.dialogdemo
+
+import android.os.Bundle
+import android.widget.Button
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        val button = findViewById<Button>(R.id.btnDialog)
+
+        button.setOnClickListener {
+            showDialog()
+        }
+    }
+
+    private fun showDialog() {
+        val builder = AlertDialog.Builder(this)
+
+        builder.setTitle("Exit App")
+        builder.setMessage("Are you sure you want to exit?")
+
+        builder.setPositiveButton("Yes") { _, _ ->
+            finish()
+        }
+
+        builder.setNegativeButton("No") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        builder.show()
+    }
+}
+
+
+
+
+exit when alert 
+
+
+package com.example.exitdialog
+
+import android.os.Bundle
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+    }
+
+    override fun onBackPressed() {
+
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Exit App")
+        builder.setMessage("Do you want to exit?")
+
+        builder.setPositiveButton("Yes") { _, _ ->
+            finish()
+        }
+
+        builder.setNegativeButton("No") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        builder.show()
+    }
+}
