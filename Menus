@@ -1,0 +1,147 @@
+
+Options Menu
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_settings"
+        android:title="Settings"/>
+
+    <item
+        android:id="@+id/menu_exit"
+        android:title="Exit"/>
+</menu>
+
+package com.example.menuapp
+
+import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_settings -> Toast.makeText(this, "Settings Clicked", Toast.LENGTH_SHORT).show()
+            R.id.menu_exit -> finish()
+        }
+        return true
+    }
+}
+
+
+Context Menu
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/edit" android:title="Edit"/>
+    <item android:id="@+id/delete" android:title="Delete"/>
+</menu>
+
+<TextView
+    android:id="@+id/textView"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Long Press Me"/>
+
+
+
+package com.example.menuapp
+
+import android.os.Bundle
+import android.view.*
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+
+class MainActivity : AppCompatActivity() {
+
+    lateinit var textView: TextView
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        textView = TextView(this)
+        textView.text = "Long Press Me"
+        setContentView(textView)
+
+        registerForContextMenu(textView)
+    }
+
+    override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenu.ContextMenuInfo?) {
+        menuInflater.inflate(R.menu.menu_context, menu)
+    }
+
+    override fun onContextItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.edit -> Toast.makeText(this, "Edit", Toast.LENGTH_SHORT).show()
+            R.id.delete -> Toast.makeText(this, "Delete", Toast.LENGTH_SHORT).show()
+        }
+        return true
+    }
+}
+
+
+
+Popup Menu
+
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/share" android:title="Share"/>
+    <item android:id="@+id/logout" android:title="Logout"/>
+</menu>
+
+<Button
+    android:id="@+id/btnMenu"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Show Menu"/>
+
+
+package com.example.menuapp
+
+import android.os.Bundle
+import android.view.View
+import android.widget.Button
+import android.widget.PopupMenu
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val button = Button(this)
+        button.text = "Show Menu"
+        setContentView(button)
+
+        button.setOnClickListener {
+            val popup = PopupMenu(this, button)
+            popup.menuInflater.inflate(R.menu.menu_popup, popup.menu)
+
+            popup.setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.share -> Toast.makeText(this, "Share", Toast.LENGTH_SHORT).show()
+                    R.id.logout -> Toast.makeText(this, "Logout", Toast.LENGTH_SHORT).show()
+                }
+                true
+            }
+            popup.show()
+        }
+    }
+}
+
+
+
+
+
