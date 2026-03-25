@@ -1,0 +1,39 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:padding="20dp"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/btn"
+        android:text="Get Location"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/txt"
+        android:text="Address here"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+</LinearLayout>
+
+
+package com.example.app
+
+import android.location.Geocoder
+import android.os.Bundle
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
+import java.util.*
+
+class MainActivity : AppCompatActivity() {
+    override fun onCreate(b: Bundle?) {
+        super.onCreate(b)
+        setContentView(R.layout.activity_main)
+
+        val txt = findViewById<TextView>(R.id.txt)
+        findViewById<Button>(R.id.btn).setOnClickListener {
+            val g = Geocoder(this, Locale.getDefault())
+            val list = g.getFromLocation(11.1271, 78.6569, 1) // Tamil Nadu
+            txt.text = list?.get(0)?.getAddressLine(0) ?: "No address"
+        }
+    }
+}
