@@ -1,0 +1,56 @@
+<!-- res/layout/activity_main.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/phone"
+        android:hint="Phone Number"
+        android:inputType="phone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <EditText
+        android:id="@+id/message"
+        android:hint="Message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:text="Send SMS"
+        android:onClick="sendSMS"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+</LinearLayout>
+
+
+
+import android.os.Bundle
+import android.telephony.SmsManager
+import android.view.View
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
+
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+    }
+
+    fun sendSMS(view: View) {
+        val phone = findViewById<EditText>(R.id.phone).text.toString()
+        val msg = findViewById<EditText>(R.id.message).text.toString()
+
+        SmsManager.getDefault().sendTextMessage(phone, null, msg, null, null)
+        Toast.makeText(this, "SMS Sent", Toast.LENGTH_SHORT).show()
+    }
+}
+
+
+<uses-permission android:name="android.permission.SEND_SMS"/>
+
+
+requestPermissions(arrayOf(android.Manifest.permission.SEND_SMS), 1)
