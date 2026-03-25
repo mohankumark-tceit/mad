@@ -1,39 +1,119 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:padding="20dp"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="20dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <Button
-        android:id="@+id/btn"
+        android:id="@+id/btnLocation"
         android:text="Get Location"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
     <TextView
-        android:id="@+id/txt"
-        android:text="Address here"
-        android:layout_width="match_parent"
+        android:id="@+id/txtAddress"
+        android:text="Address will appear here"
+        android:textSize="16sp"
+        android:paddingTop="20dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
+
 </LinearLayout>
 
 
-package com.example.app
+package com.example.locationapp
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.os.Bundle
-import android.widget.*
+import android.widget.Button
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import java.util.*
+import androidx.core.app.ActivityCompat
+import com.google.android.gms.location.LocationServices
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
-    override fun onCreate(b: Bundle?) {
-        super.onCreate(b)
+
+    lateinit var txtAddress: TextView
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val txt = findViewById<TextView>(R.id.txt)
-        findViewById<Button>(R.id.btn).setOnClickListener {
-            val g = Geocoder(this, Locale.getDefault())
-            val list = g.getFromLocation(11.1271, 78.6569, 1) // Tamil Nadu
-            txt.text = list?.get(0)?.getAddressLine(0) ?: "No address"
+        val btn = findViewById<Button>(R.id.btnLocation)
+        txtAddress = findViewById(R.id.txtAddress)
+
+        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        btn.setOnClickListener {
+
+            // Check permission
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                    1
+                )
+                return@setOnClickListener
+            }
+
+            // Get last location
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+
+                if (location != null) {
+
+                    val geocoder = Geocoder(this, Locale.getDefault())
+                    val addresses = geocoder.getFromLocation(
+                        location.latitude,
+                        location.longitude,
+                        1
+                    )
+
+                    if (!addresses.isNullOrEmpty()) {
+                        val address = addresses[0].getAddressLine(0)
+                        txtAddress.text = address
+                    } else {
+                        txtAddress.text = "Address not found"
+                    }
+                } else {
+                    txtAddress.text = "Location is null"
+                }
+            }
         }
     }
 }
+
+
+
+
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.locationapp">
+
+    <!-- Permissions -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
+    <application
+        android:allowBackup="true"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+    </application>
+</manifest>
+
