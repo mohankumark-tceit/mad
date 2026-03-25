@@ -1,0 +1,183 @@
+DatabaseHelper.kt
+
+package com.example.loginapp
+
+import android.content.ContentValues
+import android.content.Context
+import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteOpenHelper
+
+class DatabaseHelper(context: Context) :
+    SQLiteOpenHelper(context, "UserDB", null, 1) {
+
+    override fun onCreate(db: SQLiteDatabase) {
+        val createTable = "CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT)"
+        db.execSQL(createTable)
+    }
+
+    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        db.execSQL("DROP TABLE IF EXISTS users")
+        onCreate(db)
+    }
+
+    // ✅ Insert user (Register)
+    fun insertUser(username: String, password: String): Boolean {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put("username", username)
+            put("password", password)
+        }
+        val result = db.insert("users", null, values)
+        return result != -1L
+    }
+
+    // ✅ Check login
+    fun checkUser(username: String, password: String): Boolean {
+        val db = readableDatabase
+        val query = "SELECT * FROM users WHERE username=? AND password=?"
+        val cursor = db.rawQuery(query, arrayOf(username, password))
+
+        val exists = cursor.count > 0
+        cursor.close()
+        return exists
+    }
+}
+
+LoginActivity.kt
+
+
+package com.example.loginapp
+
+import android.content.Intent
+import android.os.Bundle
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
+
+class LoginActivity : AppCompatActivity() {
+
+    private lateinit var db: DatabaseHelper
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_login)
+
+        db = DatabaseHelper(this)
+
+        val username = findViewById<EditText>(R.id.etUsername)
+        val password = findViewById<EditText>(R.id.etPassword)
+        val loginBtn = findViewById<Button>(R.id.btnLogin)
+        val registerBtn = findViewById<Button>(R.id.btnRegister)
+
+        loginBtn.setOnClickListener {
+            val user = username.text.toString()
+            val pass = password.text.toString()
+
+            if (db.checkUser(user, pass)) {
+                Toast.makeText(this, "Login Success", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(this, HomeActivity::class.java))
+            } else {
+                Toast.makeText(this, "Invalid User", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        registerBtn.setOnClickListener {
+            val user = username.text.toString()
+            val pass = password.text.toString()
+
+            val inserted = db.insertUser(user, pass)
+
+            if (inserted) {
+                Toast.makeText(this, "Registered Successfully", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Registration Failed", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+
+retreive code
+
+
+
+fun getAllUsers(): List<String> {
+    val userList = mutableListOf<String>()
+    val db = readableDatabase
+
+    val cursor = db.rawQuery("SELECT * FROM users", null)
+
+    if (cursor.moveToFirst()) {
+        do {
+            val username = cursor.getString(cursor.getColumnIndexOrThrow("username"))
+            val password = cursor.getString(cursor.getColumnIndexOrThrow("password"))
+
+            userList.add("User: $username | Pass: $password")
+
+        } while (cursor.moveToNext())
+    }
+
+    cursor.close()
+    return userList
+}
+
+
+fun getUser(username: String): String? {
+    val db = readableDatabase
+
+    val cursor = db.rawQuery(
+        "SELECT * FROM users WHERE username=?",
+        arrayOf(username)
+    )
+
+    var result: String? = null
+
+    if (cursor.moveToFirst()) {
+        val user = cursor.getString(cursor.getColumnIndexOrThrow("username"))
+        val pass = cursor.getString(cursor.getColumnIndexOrThrow("password"))
+
+        result = "User: $user | Pass: $pass"
+    }
+
+    cursor.close()
+    return result
+}
+
+
+<TextView
+    android:id="@+id/tvData"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textSize="16sp"
+    android:layout_marginTop="20dp"/>
+
+
+package com.example.loginapp
+
+import android.os.Bundle
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+
+class HomeActivity : AppCompatActivity() {
+
+    private lateinit var db: DatabaseHelper
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_home)
+
+        db = DatabaseHelper(this)
+
+        val tvData = findViewById<TextView>(R.id.tvData)
+
+        val users = db.getAllUsers()
+
+        tvData.text = users.joinToString("\n")
+    }
+}
+
