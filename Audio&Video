@@ -1,0 +1,58 @@
+<Button
+    android:id="@+id/playBtn"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Play Audio"/>
+
+
+package com.example.app
+
+import android.media.MediaPlayer
+import android.os.Bundle
+import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
+
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        val player = MediaPlayer.create(this, R.raw.audio) // put audio in res/raw
+
+        findViewById<Button>(R.id.playBtn).setOnClickListener {
+            player.start()
+        }
+    }
+}
+
+
+VIDEO
+
+
+<VideoView
+    android:id="@+id/videoView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"/>
+
+package com.example.app
+
+import android.net.Uri
+import android.os.Bundle
+import android.widget.VideoView
+import androidx.appcompat.app.AppCompatActivity
+
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        val video = findViewById<VideoView>(R.id.videoView)
+
+        val uri = Uri.parse("android.resource://$packageName/${R.raw.video}") // put video in res/raw
+        video.setVideoURI(uri)
+        video.start()
+    }
+}
+
